@@ -1,17 +1,36 @@
 <?php
+
 namespace Controller;
 
+use Src\Auth\Auth;
+use Src\Request;
 use Src\View;
+
 class Site
 {
-    public function index(): string
+    public function login(Request $r): string
     {
-        $view = new View();
-        return $view->render('site.hello', ['message' => 'index working']);
+        if ($r->method === 'POST') {
+            $ok = Auth::attempt([
+                'login'    => $r->get('login'),
+                'password' => $r->get('password'),
+            ]);
+
+            if ($ok) {
+                app()->route->redirect('/');
+            }
+
+            return (new View())->render('auth/login', [
+                'error' => 'Неверный логин или пароль',
+            ]);
+        }
+
+        return (new View())->render('auth/login');
     }
 
-    public function hello(): string
+    public function logout(): void
     {
-        return new View('site.hello', ['message' => 'hello working']);
+        Auth::logout();
+        app()->route->redirect('/login');
     }
 }
