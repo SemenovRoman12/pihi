@@ -1,10 +1,4 @@
 <?php
-/**
- * @var \Model\Department[]  $departments
- * @var \Model\Discipline[]  $disciplines
- * @var \Model\Position[]    $positions
- * @var \Model\Employee|null $employee   (передаётся только в режиме edit)
- */
 $isEdit       = isset($employee);
 $action       = $isEdit
     ? '/employees/edit?id=' . $employee->id

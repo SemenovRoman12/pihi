@@ -1,13 +1,23 @@
-<?php /** @var Department[] $departments */
+<?php
 
 use Model\Department; ?>
 <h2>Кафедры</h2>
 <a href="<?= app()->route->getUrl('/department/create') ?>">Добавить</a>
-<ul>
+<table>
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
     <?php foreach ($departments as $d): ?>
-        <li>
-            <?= $d->name ?>
-            (<a href="<?= app()->route->getUrl('/department/edit').'?id='.$d->id ?>">редактировать</a>)
-        </li>
+        <tr>
+            <td><?= htmlspecialchars($d->name) ?></td>
+            <td>
+                <a href="<?= app()->route->getUrl('/department/edit').'?id='.htmlspecialchars($d->id) ?>">Редактировать</a>
+            </td>
+        </tr>
     <?php endforeach; ?>
-</ul>
+    </tbody>
+</table>

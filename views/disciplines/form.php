@@ -1,6 +1,4 @@
 <?php
-/** @var Discipline|null $discipline */
-
 use Model\Discipline;
 
 $isEdit = isset($discipline);

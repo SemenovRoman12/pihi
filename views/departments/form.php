@@ -1,5 +1,4 @@
 <?php
-/** @var Department|null $department */
 
 use Model\Department;
 

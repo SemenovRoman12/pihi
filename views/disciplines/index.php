@@ -1,4 +1,4 @@
-<?php /** @var Discipline[] $disciplines */
+<?php
 
 use Model\Discipline; ?>
 <h2>Дисциплины</h2>
