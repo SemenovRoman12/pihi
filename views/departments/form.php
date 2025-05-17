@@ -1,13 +1,20 @@
 <?php
+/** @var \Model\Department|null $department */
+/** @var array|null            $errors      */
 
-use Model\Department;
-
-$isEdit = isset($department);
-$action = $isEdit ? '/department/edit?id='.$department->id : '/department/create';
 ?>
-<h2>Кафедра</h2>
-<form method="post" action="<?= app()->route->getUrl($action) ?>">
-    <input type="text" name="name" placeholder="Название"
-           value="<?= $department->name ?? '' ?>" required>
-    <button type="submit"><?= $isEdit ? 'Сохранить' : 'Добавить' ?></button>
+<form method="post" class="p-4">
+    <div class="mb-3">
+        <label for="depName" class="form-label">Название кафедры</label>
+        <input  type="text"
+                id="depName"
+                name="name"
+                class="form-control <?= isset($errors['name']) ? 'is-invalid' : '' ?>"
+                value="<?= htmlspecialchars($department->name ?? ($_POST['name'] ?? '')) ?>">
+
+        <?php $field = 'name';
+        require __DIR__ . '/../components/field-error.php'; ?>
+    </div>
+
+    <button class="btn btn-success">Сохранить</button>
 </form>

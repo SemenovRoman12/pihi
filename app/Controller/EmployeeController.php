@@ -9,12 +9,12 @@ use Model\Position;
 use Model\User;
 use Src\Request;
 use Src\View;
+use Src\Validation\UserValidator;
 
 class EmployeeController
 {
     public function index(Request $r): string
     {
-        // выбираем сотрудников вместе со связями
         $q = Employee::with(['departments', 'disciplines', 'position']);
 
         /* ---------- фильтр кафедр ---------- */
@@ -31,11 +31,7 @@ class EmployeeController
 
         /* ---------- поиск по ФИО ---------- */
         if ($fio = trim($r->get('fio'))) {
-            // подготавливаем шаблон для LIKE
             $like = '%' . $fio . '%';
-
-            // ищем в конкатенации ФИО и в отдельных полях,
-            // чтобы срабатывало и на «Иванов Иван» и на «Иван»
             $q->where(function ($q) use ($like) {
                 $q->whereRaw("CONCAT(last_name,' ',first_name,' ',middle_name) LIKE ?", [$like])
                     ->orWhere('last_name',  'LIKE', $like)
@@ -56,16 +52,41 @@ class EmployeeController
      *---------------------------------------------------------------------*/
     public function create(Request $r): string
     {
-        // ---------- POST: сохраняем ----------
+        /* ---------- POST: сохраняем ---------- */
         if ($r->method === 'POST') {
-            // 1) учётка
+
+            /* --- валидируем учётную запись сотрудника --- */
+            $validator = new UserValidator();
+            $fio = trim(
+                ($r->get('last_name') ?? '') . ' ' .
+                ($r->get('first_name') ?? '') . ' ' .
+                ($r->get('middle_name') ?? '')
+            );
+
+            if (!$validator->validate([
+                'fio'        => $fio,
+                'birth_date' => $r->get('birth_date'),
+                'login'      => $r->get('login'),
+                'password'   => $r->get('password'),
+            ])) {
+                // возвращаем форму с ошибками и введёнными данными
+                return (new View())->render('employees/form', [
+                    'errors'      => $validator->errors(),
+                    'old'         => $r->all(),
+                    'departments' => Department::all(),
+                    'disciplines' => Discipline::all(),
+                    'positions'   => Position::all(),
+                ]);
+            }
+
+            /* --- учётка --- */
             $user = User::create([
                 'login'    => $r->get('login'),
                 'password' => md5($r->get('password')),
                 'role'     => 'staff',
             ]);
 
-            // 2) карточка сотрудника
+            /* --- карточка сотрудника --- */
             $emp = Employee::create([
                 'first_name'  => $r->get('first_name'),
                 'last_name'   => $r->get('last_name'),
@@ -77,13 +98,14 @@ class EmployeeController
                 'user_id'     => $user->id,
             ]);
 
-            // 3) назначения
+            /* --- назначения --- */
             $emp->departments()->sync($r->get('department', []));
             $emp->disciplines()->sync($r->get('discipline',  []));
 
             return app()->route->redirect('/');
         }
 
+        /* ---------- GET: пустая форма ---------- */
         return (new View())->render('employees/form', [
             'departments' => Department::all(),
             'disciplines' => Discipline::all(),
@@ -93,7 +115,6 @@ class EmployeeController
 
     public function edit(Request $r): string
     {
-        /* найдём сотрудника или 404 */
         $emp = Employee::with(['departments', 'disciplines'])
             ->findOrFail($r->get('id'));
 
@@ -112,17 +133,15 @@ class EmployeeController
             $emp->departments()->sync($r->get('department', []));
             $emp->disciplines()->sync($r->get('discipline', []));
 
-            /* --- редирект на СПИСОК --- */
             app()->route->redirect('/employees');
         }
 
         /* ---------- GET: форма с заполненными полями ---------- */
         return (new View())->render('employees/form', [
-            'employee'    => $emp,               // ← ключ для шаблона
+            'employee'    => $emp,
             'departments' => Department::all(),
             'disciplines' => Discipline::all(),
             'positions'   => Position::all(),
         ]);
     }
-    /* остальной код контроллера без изменений … */
 }
