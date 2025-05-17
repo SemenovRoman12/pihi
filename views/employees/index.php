@@ -2,6 +2,14 @@
 
 <!-- ФИЛЬТРЫ -------------------------------------------------------------->
 <form id="filterForm" method="get">
+    <!-- ПОИСК ПО ФИО ---------------------------------------------------------->
+    <label style="display:block;">
+        <input type="text" name="fio"
+               value="<?= htmlspecialchars($_GET['fio'] ?? '') ?>"
+               placeholder="Поиск по ФИО"
+               class="search-fio-input">
+    </label>
+
     <fieldset style="border:1px solid #ccc;padding:10px;margin-bottom:15px">
         <legend>Кафедры</legend>
         <?php foreach ($departments as $d): ?>
@@ -27,15 +35,17 @@
             </label>
         <?php endforeach; ?>
     </fieldset>
+
     <button type="submit" style="display:none">Фильтр</button>
 </form>
 
 <script>
+    // автоматическая отправка формы при изменении чек-боксов
     document.querySelectorAll('#filterForm input[type="checkbox"]')
         .forEach(cb => cb.addEventListener('change', () => cb.form.submit()));
 </script>
 
-<a href="<?= app()->route->getUrl('/employee/create') ?>">Добавить</a>
+<a href="<?= app()->route->getUrl('/employees/create') ?>">Добавить</a>
 
 <table>
     <tr>
@@ -52,7 +62,7 @@
             <td><?= implode(', ', $e->departments->pluck('name')->all()) ?></td>
             <td><?= implode(', ', $e->disciplines->pluck('name')->all()) ?></td>
             <td>
-                <a href="<?= app()->route->getUrl('/employee/edit') . '?id=' . $e->id ?>">
+                <a href="<?= app()->route->getUrl('/employees/edit') . '?id=' . $e->id ?>">
                     редактировать
                 </a>
             </td>

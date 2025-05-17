@@ -10,7 +10,6 @@ use Src\Traits\SingletonTrait;
 
 class Middleware
 {
-    //Используем трейт
     use SingletonTrait;
 
     private RouteCollector $middlewareCollector;

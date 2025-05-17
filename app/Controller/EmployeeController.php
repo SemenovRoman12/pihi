@@ -14,17 +14,34 @@ class EmployeeController
 {
     public function index(Request $r): string
     {
+        // выбираем сотрудников вместе со связями
         $q = Employee::with(['departments', 'disciplines', 'position']);
 
-        /* --- фильтр кафедр --- */
+        /* ---------- фильтр кафедр ---------- */
         if ($ids = $r->get('department')) {
             $q->whereHas('departments',
-                fn($d) => $d->whereIn('departments.id', (array)$ids));
+                fn ($d) => $d->whereIn('departments.id', (array)$ids));
         }
-        /* --- фильтр дисциплин --- */
+
+        /* ---------- фильтр дисциплин ---------- */
         if ($ids = $r->get('discipline')) {
             $q->whereHas('disciplines',
-                fn($d) => $d->whereIn('disciplines.id', (array)$ids));
+                fn ($d) => $d->whereIn('disciplines.id', (array)$ids));
+        }
+
+        /* ---------- поиск по ФИО ---------- */
+        if ($fio = trim($r->get('fio'))) {
+            // подготавливаем шаблон для LIKE
+            $like = '%' . $fio . '%';
+
+            // ищем в конкатенации ФИО и в отдельных полях,
+            // чтобы срабатывало и на «Иванов Иван» и на «Иван»
+            $q->where(function ($q) use ($like) {
+                $q->whereRaw("CONCAT(last_name,' ',first_name,' ',middle_name) LIKE ?", [$like])
+                    ->orWhere('last_name',  'LIKE', $like)
+                    ->orWhere('first_name', 'LIKE', $like)
+                    ->orWhere('middle_name','LIKE', $like);
+            });
         }
 
         return (new View())->render('employees/index', [
@@ -39,7 +56,7 @@ class EmployeeController
      *---------------------------------------------------------------------*/
     public function create(Request $r): string
     {
-        /* ---------- POST: сохраняем ---------- */
+        // ---------- POST: сохраняем ----------
         if ($r->method === 'POST') {
             // 1) учётка
             $user = User::create([
@@ -62,24 +79,18 @@ class EmployeeController
 
             // 3) назначения
             $emp->departments()->sync($r->get('department', []));
-            $emp->disciplines()->sync($r->get('discipline', []));
+            $emp->disciplines()->sync($r->get('discipline',  []));
 
-            /* --- редирект на ГЛАВНУЮ --- */
-            app()->route->redirect('/');
+            return app()->route->redirect('/');
         }
 
-        /* ---------- GET: форма ---------- */
         return (new View())->render('employees/form', [
             'departments' => Department::all(),
             'disciplines' => Discipline::all(),
             'positions'   => Position::all(),
-            // переменной employee НЕТ → шаблон поймёт, что это «создание»
         ]);
     }
 
-    /*----------------------------------------------------------------------
-     | РЕДАКТИРОВАНИЕ сотрудника
-     *---------------------------------------------------------------------*/
     public function edit(Request $r): string
     {
         /* найдём сотрудника или 404 */
@@ -113,4 +124,5 @@ class EmployeeController
             'positions'   => Position::all(),
         ]);
     }
+    /* остальной код контроллера без изменений … */
 }
