@@ -2,10 +2,10 @@
 
 namespace Controller;
 
+use Src\Validation\DisciplineValidator;
 use Model\Discipline;
 use Src\Request;
 use Src\View;
-use Src\Validation\DisciplineValidator;
 
 class DisciplineController
 {

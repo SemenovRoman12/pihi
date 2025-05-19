@@ -3,6 +3,7 @@
 namespace Src\Validation;
 
 use Model\Discipline;
+use AbstractValidator\BaseValidator;
 
 /**
  * Проверяет название и часы дисциплины при создании/редактировании.

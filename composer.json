@@ -13,7 +13,9 @@
         "php": "^7.4 | ^8.0",
         "illuminate/database": "^8.0",
         "illuminate/events": "^8.0",
-        "nikic/fast-route": "^1.3"
+        "nikic/fast-route": "^1.3",
+        "pynhaxd/demo-collect": "dev-main",
+        "pynhaxd/base-validator": "dev-main"
     },
     "autoload": {
         "psr-4": {

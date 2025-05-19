@@ -2,6 +2,7 @@
 
 namespace Src\Validation;
 
+use AbstractValidator\BaseValidator;
 use Model\Department;
 
 /**
