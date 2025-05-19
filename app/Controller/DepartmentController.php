@@ -60,4 +60,11 @@ class DepartmentController
 
         return (new View())->render('departments.form', ['department' => $dep]);
     }
+    public function delete(Request $r): void
+    {
+        if ($d = Department::find($r->get('id'))) {
+            $d->delete();
+        }
+        app()->route->redirect('/departments');
+    }
 }

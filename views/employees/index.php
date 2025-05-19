@@ -1,3 +1,7 @@
+<?php
+$isAdmin = app()->auth::user()->role === 'admin';
+?>
+
 <h2>Сотрудники</h2>
 
 <!-- ФИЛЬТРЫ -------------------------------------------------------------->
@@ -45,26 +49,25 @@
         .forEach(cb => cb.addEventListener('change', () => cb.form.submit()));
 </script>
 
-<a href="<?= app()->route->getUrl('/employees/create') ?>">Добавить</a>
+<a href="<?= app()->route->getUrl('/employee/create') ?>">Добавить</a>
 
 <table>
     <tr>
-        <th>ФИО</th>
-        <th>Должность</th>
-        <th>Кафедры</th>
-        <th>Дисциплины</th>
-        <th></th>
+        <th>ФИО</th><th>Должность</th><th>Кафедры</th><th>Дисциплины</th><th></th>
     </tr>
     <?php foreach ($employees as $e): ?>
         <tr>
             <td><?= $e->full_name ?></td>
             <td><?= $e->position->name ?></td>
-            <td><?= implode(', ', $e->departments->pluck('name')->all()) ?></td>
-            <td><?= implode(', ', $e->disciplines->pluck('name')->all()) ?></td>
+            <td><?= implode(', ',$e->departments->pluck('name')->all()) ?></td>
+            <td><?= implode(', ',$e->disciplines->pluck('name')->all()) ?></td>
             <td>
-                <a href="<?= app()->route->getUrl('/employees/edit') . '?id=' . $e->id ?>">
-                    редактировать
-                </a>
+                <a href="<?= app()->route->getUrl('/employee/edit').'?id='.$e->id ?>">редактировать</a>
+                <?php if($isAdmin): ?>
+                    |
+                    <a href="<?= app()->route->getUrl('/employee/delete').'?id='.$e->id ?>"
+                       onclick="return confirm('Удалить сотрудника?')">удалить</a>
+                <?php endif; ?>
             </td>
         </tr>
     <?php endforeach; ?>

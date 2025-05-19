@@ -80,4 +80,12 @@ class DisciplineController
 
         return (new View())->render('disciplines.form', ['discipline' => $d]);
     }
+
+    public function delete(Request $r): void
+    {
+        if ($d = Discipline::find($r->get('id'))) {
+            $d->delete();
+        }
+        app()->route->redirect('/disciplines');
+    }
 }

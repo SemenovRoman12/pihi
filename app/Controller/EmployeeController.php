@@ -144,4 +144,14 @@ class EmployeeController
             'positions'   => Position::all(),
         ]);
     }
+
+    public function delete(Request $r): void
+    {
+        $id = (int)$r->get('id');
+        if ($emp = Employee::find($id)) {
+            User::where('id', $emp->user_id)->delete();   // сначала аккаунт
+            $emp->delete();                               // затем сам сотрудник
+        }
+        app()->route->redirect('/employees');
+    }
 }
