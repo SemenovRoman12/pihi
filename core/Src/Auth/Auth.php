@@ -18,6 +18,13 @@ class Auth
         }
     }
 
+    public static function generateCSRF(): string
+    {
+        $token = md5(time());
+        Session::set('csrf_token', $token);
+        return $token;
+    }
+
     //Вход пользователя по модели
     public static function login(IdentityInterface $user): void
     {

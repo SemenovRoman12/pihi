@@ -24,6 +24,7 @@ $position  = $old['position_id'] ?? ($employee->position_id ?? '');
 <h2><?= $isEdit ? 'Редактировать сотрудника' : 'Новый сотрудник' ?></h2>
 
 <form method="post" action="<?= app()->route->getUrl($action) ?>" class="p-4">
+    <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
 
     <label class="d-block mb-2">Фамилия
         <input type="text" name="last_name"

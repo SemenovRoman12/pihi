@@ -1,9 +1,5 @@
-<?php
-/** @var \Model\Department|null $department */
-/** @var array|null            $errors      */
-
-?>
 <form method="post" class="p-4">
+    <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
     <div class="mb-3">
         <label for="depName" class="form-label">Название кафедры</label>
         <input  type="text"

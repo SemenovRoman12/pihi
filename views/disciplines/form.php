@@ -10,6 +10,7 @@ $nameValue  = $old['name']  ?? ($discipline->name  ?? '');
 $hoursValue = $old['hours'] ?? ($discipline->hours ?? '');
 ?>
 <form method="post" class="p-4">
+    <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
     <!-- Название -->
     <div class="mb-3">
         <label for="discName" class="form-label">Название дисциплины</label>
