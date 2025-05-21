@@ -24,5 +24,8 @@
             "Model\\":       "app/Model/",
             "Controller\\":  "app/Controller/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.5"
     }
 }
