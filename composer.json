@@ -15,7 +15,8 @@
         "illuminate/events": "^8.0",
         "nikic/fast-route": "^1.3",
         "pynhaxd/demo-collect": "dev-main",
-        "pynhaxd/base-validator": "dev-main"
+        "pynhaxd/base-validator": "dev-main",
+        "pynhaxd/validator-common": "dev-main"
     },
     "autoload": {
         "psr-4": {

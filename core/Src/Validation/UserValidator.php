@@ -4,9 +4,21 @@ namespace Src\Validation;
 
 use AbstractValidator\BaseValidator;
 use Model\User;
+use Pynhaxd\Validation\Interfaces\BaseInterface;
+use Pynhaxd\Validation\Validators\Date;
+use Pynhaxd\Validation\Validators\Login;
+use Pynhaxd\Validation\Validators\Name;
+use Pynhaxd\Validation\Validators\Password;
 
 class UserValidator extends BaseValidator
 {
+    protected function check(string $field, $value, BaseInterface $rule): void
+    {
+        if ($rule->fails($value)) {                 // пакетная логика
+            $this->addError($field, $rule->message());
+        }
+    }
+
     public function validate(array $data): bool
     {
         $this->errors = [];                       // сбрасываем прошлые ошибки
@@ -16,29 +28,13 @@ class UserValidator extends BaseValidator
         $password   = $data['password']   ?? '';
 
         /* ---- ФИО ---- */
-        if (!preg_match('/^[А-ЯЁа-яё\\s]+$/u', $fio)) {
-            $this->addError('fio', 'ФИО должно содержать только русские буквы');
-        }
+        $this->check('fio',        $data['fio']        ?? '', new Name);
+        $this->check('birth_date', $data['birth_date'] ?? '', new Date);
+        $this->check('login',      $data['login']      ?? '', new Login);
+        $this->check('password',   $data['password']   ?? '', new Password);
 
-        /* ---- Дата рождения ---- */
-        $dt = \DateTime::createFromFormat('Y-m-d', $birth);
-        if (!$dt || $dt > new \DateTime()) {
-            $this->addError('birth_date', 'Некорректная дата рождения');
-        }
-
-        /* ---- Логин ---- */
-        if (!preg_match('/^[A-Za-z]+$/', $login)) {
-            $this->addError('login', 'Логин должен состоять только из английских букв');
-        } elseif (User::where('login', $login)->exists()) {
+        if (!empty($data['login']) && User::where('login', $data['login'])->exists()) {
             $this->addError('login', 'Пользователь с таким логином уже существует');
-        }
-
-        /* ---- Пароль ---- */
-        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$/', $password)) {
-            $this->addError(
-                'password',
-                'Пароль ≥ 8 символов, только латиница и цифры, минимум одна буква и одна цифра'
-            );
         }
 
         return !$this->fails();

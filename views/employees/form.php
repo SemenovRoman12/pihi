@@ -6,8 +6,8 @@ $old    = $old    ?? [];
 $isEdit = isset($employee);
 
 $action = $isEdit
-    ? '/employees/edit?id=' . $employee->id
-    : '/employees/create';
+    ? '/employee/edit?id=' . $employee->id
+    : '/employee/create';
 
 $selectedDeps = $old['department']    ?? ($isEdit ? $employee->departments->pluck('id')->all()  : []);
 $selectedDis  = $old['discipline']    ?? ($isEdit ? $employee->disciplines->pluck('id')->all() : []);
